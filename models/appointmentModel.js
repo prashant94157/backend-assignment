@@ -4,14 +4,16 @@ const appointmentSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true,
   },
   appointmentAt: {
     type: Date,
     required: true,
     unique: true,
-    index: true,
+  },
+  isAllocated: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
 });
 

@@ -6,6 +6,7 @@ import connectDB from './config/db.js';
 import students from './data/students.js';
 import dean from './data/dean.js';
 import User from './models/userModel.js';
+import Appointment from './models/appointmentModel.js';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ connectDB();
 const importData = async () => {
   try {
     await User.deleteMany();
+    await Appointment.deleteMany();
 
     await User.insertMany([...students, dean]);
 
@@ -28,6 +30,7 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await User.deleteMany();
+    await Appointment.deleteMany();
 
     await User.insertMany([dean]);
 
