@@ -1,8 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 
-import User from '../models/userModel.js';
 import Appointment from '../models/appointmentModel.js';
-import generateToken from '../utils/generateToken.js';
 
 // @desc Get free Slots
 // @route GET /api/v1/appointments
@@ -98,7 +96,9 @@ const getBookedSlots = expressAsyncHandler(async (req, res) => {
   const bookedSlots = await Appointment.find({
     isAllocated: { $eq: true },
     appointmentAt: { $gt: new Date() },
-  });
+  })
+    .select('-isAllocated')
+    .populate('user', 'name');
   res.json({ slots: bookedSlots });
 });
 

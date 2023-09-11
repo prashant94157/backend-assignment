@@ -1,4 +1,3 @@
-import mongoose, { connect } from 'mongoose';
 import dotenv from 'dotenv';
 import colors from 'colors';
 
