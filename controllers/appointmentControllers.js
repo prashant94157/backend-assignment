@@ -1,6 +1,7 @@
 import expressAsyncHandler from 'express-async-handler';
 
 import Appointment from '../models/appointmentModel.js';
+import User from '../models/userModel.js';
 
 // @desc Get free Slots
 // @route GET /api/v1/appointments
@@ -9,7 +10,7 @@ const getSlots = expressAsyncHandler(async (req, res) => {
   const alreadyCreatedFreeSlots = await Appointment.find({
     isAllocated: { $eq: false },
     appointmentAt: { $gt: new Date() },
-  });
+  }).populate('dean', 'name');
   let newlyCreatedFreeSlots = [];
 
   // checking whether there are enough free slots or not
@@ -42,21 +43,26 @@ const getSlots = expressAsyncHandler(async (req, res) => {
       maxDate = lastUnappointedSlot[0].appointmentAt;
 
     let appointmentTime = [];
+    const deans = await User.find({ isStudent: false }).select('name');
 
     for (let i = 0; i < 4; i++) {
-      let d1 = new Date(maxDate),
-        d2 = new Date(maxDate);
+      for (let j = 0; j < deans.length; j++) {
+        let d1 = new Date(maxDate),
+          d2 = new Date(maxDate);
 
-      // Thursday
-      d1.setDate(d1.getDate() + ((4 + 7 - d1.getDay()) % 7 || 7) + 7 * i);
-      d1.setHours(10, 0, 0, 0);
-      appointmentTime.push({ appointmentAt: d1 });
+        // Thursday
+        d1.setDate(d1.getDate() + ((4 + 7 - d1.getDay()) % 7 || 7) + 7 * i);
+        d1.setHours(10, 0, 0, 0);
+        appointmentTime.push({ appointmentAt: d1, dean: deans[j] });
 
-      // Friday
-      d2.setDate(d2.getDate() + ((5 + 7 - d2.getDay()) % 7 || 7) + 7 * i);
-      d2.setHours(10, 0, 0, 0);
-      appointmentTime.push({ appointmentAt: d2 });
+        // Friday
+        d2.setDate(d2.getDate() + ((5 + 7 - d2.getDay()) % 7 || 7) + 7 * i);
+        d2.setHours(10, 0, 0, 0);
+        appointmentTime.push({ appointmentAt: d2, dean: deans[j] });
+      }
     }
+
+    console.log(appointmentTime);
 
     newlyCreatedFreeSlots = await Appointment.insertMany(appointmentTime);
   }
@@ -95,6 +101,7 @@ const bookSlot = expressAsyncHandler(async (req, res) => {
 const getBookedSlots = expressAsyncHandler(async (req, res) => {
   const bookedSlots = await Appointment.find({
     isAllocated: { $eq: true },
+    dean: req.user._id,
     appointmentAt: { $gt: new Date() },
   })
     .select('-isAllocated')

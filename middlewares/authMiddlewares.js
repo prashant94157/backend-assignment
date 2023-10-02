@@ -38,7 +38,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
 // check dean access
 const dean = (req, res, next) => {
-  if (process.env.DEAN_ID.localeCompare(req.user.universityId) === 0) next();
+  if (!req.user.isStudent) next();
   else {
     res.status(401);
     throw new Error('Not have enough access');

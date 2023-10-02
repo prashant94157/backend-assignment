@@ -16,6 +16,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isStudent: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
 
 userSchema.pre('save', async function (next) {

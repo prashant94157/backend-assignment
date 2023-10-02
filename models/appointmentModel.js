@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const appointmentSchema = mongoose.Schema({
+  dean: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
